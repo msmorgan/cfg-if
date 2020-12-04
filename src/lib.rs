@@ -66,9 +66,9 @@ macro_rules! cfg_if {
 
     // Internal and recursive macro to emit all the items
     //
-    // Collects all the negated cfgs in a list at the beginning and after the
-    // semicolon is all the remaining items
-    ( @__items ( $( $_:meta , )* ) ; ) => {};
+    // Collects all the previous cfgs in a list at the beginning, so they can be
+    // negated. After the semicolon is all the remaining items.
+    ( @__items ($( $_:meta , )*) ; ) => {};
     (
         @__items ( $( $no:meta , )* ) ;
         ( ( $( $yes:meta )? ) ( $( $tokens:tt )* ) ) ,
@@ -87,13 +87,16 @@ macro_rules! cfg_if {
         // our `$yes` matchers to the list of `$no` matchers as future emissions
         // will have to negate everything we just matched as well.
         $crate::cfg_if! {
-            @__items ( $( $no , )* $( $yes , )? ) ;
+            @__items (
+                $( $no , )*
+                $( $yes , )?
+            ) ;
             $( $rest , )*
         }
     };
 
     // Internal macro to make __apply work out right for different match types,
-    // because of how macros matching/expand stuff.
+    // because of how macros match/expand stuff.
     ( @__identity $( $tokens:tt )* ) => {
         $( $tokens )*
     };
