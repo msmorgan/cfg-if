@@ -61,7 +61,6 @@ macro_rules! cfg_if {
             $(
                 ( ( $e_meta ) ( $( $e_tokens )* ) ) ,
             )*
-            ( () () ) ,
         }
     };
 
