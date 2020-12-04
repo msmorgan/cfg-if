@@ -87,10 +87,7 @@ macro_rules! cfg_if {
         // our `$yes` matchers to the list of `$no` matchers as future emissions
         // will have to negate everything we just matched as well.
         $crate::cfg_if! {
-            @__items (
-                $( $no , )*
-                $( $yes , )?
-            ) ;
+            @__items ( $( $no , )* $( $yes , )? ) ;
             $( $rest , )*
         }
     };
