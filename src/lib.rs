@@ -43,9 +43,9 @@ macro_rules! cfg_if {
             @__items
             () ;
             $(
-                ( ($i_meta) ( $( $i_tokens )* ) ),
+                ( ( $i_meta ) ( $( $i_tokens )* ) ),
             )*
-            ( () ($($e_tokens)*) ),
+            ( () ( $( $e_tokens )* ) ),
         }
     };
 
@@ -71,24 +71,24 @@ macro_rules! cfg_if {
     //
     // Collects all the negated cfgs in a list at the beginning and after the
     // semicolon is all the remaining items
-    (@__items ( $( $not:meta , )* ) ; ) => {};
+    (@__items ( $( $no:meta , )* ) ; ) => {};
     (
-        @__items ( $( $not:meta , )* ) ;
-        ( ( $( $m:meta ),* ) ( $( $tokens:tt )* ) ) ,
+        @__items ( $( $no:meta , )* ) ;
+        ( ( $( $yes:meta ),* ) ( $( $tokens:tt )* ) ) ,
         $( $rest:tt , )*
     ) => {
         // Emit all items within one block, applying an appropriate #[cfg]. The
-        // #[cfg] will require all `$m` matchers specified and must also negate
+        // #[cfg] will require all `$yes` matchers specified and must also negate
         // all previous matchers.
-        #[cfg(all( $( $m , )* not(any( $( $not ),* )) ))]
+        #[cfg(all( $( $yes , )* not(any( $( $no ),* )) ))]
         $crate::cfg_if! { @__identity $( $tokens )* }
 
         // Recurse to emit all other items in `$rest`, and when we do so add all
-        // our `$m` matchers to the list of `$not` matchers as future emissions
+        // our `$yes` matchers to the list of `$no` matchers as future emissions
         // will have to negate everything we just matched as well.
         $crate::cfg_if! {
             @__items
-            ( $( $not , )* $( $m , )* ) ;
+            ( $( $no , )* $( $yes , )* ) ;
             $( $rest , )*
         }
     };
